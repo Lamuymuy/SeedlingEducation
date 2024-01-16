@@ -1,26 +1,32 @@
-# SeedlingEducation
-This is an attempt at creating a web server project
-for the benefit of Modesto Junior College
-and the communities affected by it. It serves as a
-hub of information for those motivated enough
-to seek out opportunities beyond the immediate.
-It serves as a resource of education that enriches
-the classes and allows for those struggling to
-have tailored help. Through this project, the seedlings
-at this school hope to grow into towering trees.
+[![GitHub Super-Linter](https://github.com/ImmaculateDivinity/SeedlingEducation/actions/workflows/superlinter.yml/badge.svg)](https://github.com/marketplace/actions/super-linter)
 
-The central idea differs from CommunityALI or the
-MJC site because this site is more verbose
-and focuses on a connection between the students
-and the school. As such, a "bloggy" type of model
-has been adapted into the formulation of the site.
-It will also be actively maintained by students
-and have minimal bloat and minimal bureaucratic approach.
+# SeedlingEducation
+
+Democratizing education is the foremost goal of society.
+But, democratic education also means democratizing teaching.
+The Seedling Project utilizes the wisdom and knowledge gathered
+by the masses (students) to create a library of high-quality
+resources for future generations of students to benefit from.
+We enrich our knowledge by democratizing teaching not only
+because the resources created through the process are high-quality
+and equitable, but also because the process itself (of teaching and
+creation) develops the character of each who partakes in its fruit.
+
+Each person with their own unique and diverse background, especially in
+community colleges can contribute their experiences in education,
+life, research, and more with other students. Who is more qualified
+to answer unusually specific questions about education than those
+who are actively navigating its challenges?
+
+Democratize education, improve academic outcomes, and pave the way for
+our future scientists and engineers.
 
 ## Documentation Link
-https://github.com/ImmaculateDivinity/Seedlingmkdocs.git
+
+https://seedling-project.github.io/Seedlingmkdocs/
 
 ## Github Contributions
+
 At this moment, there are two branches: main and frontend.
 Clone the repository.
 Set the main to your upstream as such:
@@ -30,17 +36,17 @@ command.
 
 ### Setting Upstream:
 
-Setting an upstream branch establishes a link between your 
+Setting an upstream branch establishes a link between your
 current branch and a specified remote branch.
-This is useful when you want to track changes from a 
+This is useful when you want to track changes from a
 specific remote branch in your current branch
-The upstream setting merely establishes a default remote branch 
-that your local branch will interact with when you run commands 
+The upstream setting merely establishes a default remote branch
+that your local branch will interact with when you run commands
 like git pull or git merge.
 
 ### Pulling:
 
-git pull: is a command that fetches the latest changes from the remote 
+git pull: is a command that fetches the latest changes from the remote
 repository and merges them into your current branch.
 It essentially combines git fetch and git merge into a single
 command.

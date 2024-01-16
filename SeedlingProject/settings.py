@@ -9,45 +9,80 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import os
 
-from pathlib import Path
+import environ
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+env = environ.Env()
+env.read_env()
 
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(PROJECT_DIR)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-tj1@n-5uf4%%(jra9)^#_+g)k=7*+lqvx=es*jxdgfq_24x!^="
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
+    # Apps
+    "core",  # might need to specify app config i.e 'core.apps.CoreConfig'
+    # wagtail apps
+    "wagtail.contrib.forms",
+    "wagtail.contrib.redirects",
+    "wagtail.embeds",
+    "wagtail.sites",
+    "wagtail.users",
+    "wagtail.snippets",
+    "wagtail.documents",
+    "wagtail.images",
+    "wagtail.search",
+    "wagtail.admin",
+    "wagtail",
+    # third party apps
+    "taggit",
+    "modelcluster",
+    # django apps
     "django.contrib.auth",
+    "django.contrib.admin",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "seedling.apps.SeedlingConfig",
+    # rest framework apps
+    "corsheaders",
+    "rest_framework",
+    "wagtail.api.v2",
 ]
 
+
 MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+]
+
+CORS_ALLOW_ALL_ORIGINS = (
+    True  # FIXME: for production, change to False and add frontend url
+)
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    "x-custom-header",  # Add your custom header here
 ]
 
 ROOT_URLCONF = "SeedlingProject.urls"
@@ -55,7 +90,7 @@ ROOT_URLCONF = "SeedlingProject.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -70,55 +105,106 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "SeedlingProject.wsgi.application"
 
-
 # Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
+DATABASES = {  # get user and password from env variables
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env("DB_NAME"),
+        "USER": env("DB_USER"),
+        "PASSWORD": env("DB_PASSWORD"),
+        "HOST": env("DB_HOST"),  # Set to empty string for localhost.
+        "PORT": env("DB_PORT"),  # Set to empty string for default port.
+        "CONN_MAX_AGE": 600,  # number of seconds database connections should persist for
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
-]
-
-
 # Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "America/Los_Angeles"
-
+TIME_ZONE = "UTC"
 USE_I18N = True
-
+USE_L10N = True
 USE_TZ = True
 
+STATIC_URL = "/static/"
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
 
-STATIC_URL = "static/"
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+ADMINS = [
+    # ('Your Name', 'your_email@example.com'),
+    ("seedling", "andry965255@my.yosemite.edu"),
+    ("admin", "kyle996032@my.yosemite.edu"),
+]
+MANAGERS = ADMINS
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+# Default to dummy email backend. Configure dev/production/local backend
+# as per https://docs.djangoproject.com/en/stable/topics/email/#email-backends
+EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
+
+# Hosts/domain names that are valid for this site; required if DEBUG is False
+ALLOWED_HOSTS = [
+    "seedlingfrontend-production.up.railway.app",
+    "seedlingbackend-production.up.railway.app",
+]
+CORS_ORIGIN_ALLOW_ALL = True  # for development mode only
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = "change-me"
+
+EMAIL_SUBJECT_PREFIX = "[Wagtail] "
+
+INTERNAL_IPS = ("127.0.0.1", "10.0.2.2")
+
+# A sample logging configuration. The only tangible logging
+# performed by this configuration is to send an email to
+# the site admins on every HTTP 500 error when DEBUG=False.
+# See https://docs.djangoproject.com/en/stable/topics/logging for
+# more details on how to customise your logging configuration.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "handlers": {
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
+        }
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+    },
+}
+
+
+# WAGTAIL SETTINGS
+
+# This is the human-readable name of your Wagtail install
+# which welcomes users upon login to the Wagtail admin.
+WAGTAIL_SITE_NAME = "SeedlingProject"
+
+# wagtail base url
+WAGTAILADMIN_BASE_URL = "https://seedlingbackend-production.up.railway.app/admin"
+
+# Replace the search backend
+# WAGTAILSEARCH_BACKENDS = {
+#  'default': {
+#    'BACKEND': 'wagtail.search.backends.elasticsearch8',
+#    'INDEX': 'myapp'
+#  }
+# }
+
+# Wagtail email notifications from address
+# WAGTAILADMIN_NOTIFICATION_FROM_EMAIL = 'wagtail@myhost.io'
+
+# Wagtail email notification format
+# WAGTAILADMIN_NOTIFICATION_USE_HTML = True
+
+# Reverse the default case-sensitive handling of tags
+TAGGIT_CASE_INSENSITIVE = True

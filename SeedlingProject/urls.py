@@ -14,7 +14,50 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import include, path
+import os.path
 
-urlpatterns = [path("admin/", admin.site.urls), path("", include("seedling.urls"))]
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path, re_path
+from django.views.generic.base import RedirectView
+from wagtail import urls as wagtail_urls
+from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.documents import urls as wagtaildocs_urls
+
+from rest_framework.routers import DefaultRouter
+from core.api.views import StandardViewSet
+from core.api.views import DocumentViewSet
+
+router = DefaultRouter()
+router.register(r"standard", StandardViewSet, basename="standard")
+router.register(r"document", DocumentViewSet, basename="document")
+
+print(router.urls)
+urlpatterns = [
+    path("django-admin/", admin.site.urls),
+    path("admin/", include(wagtailadmin_urls)),
+    path("documents/", include(wagtaildocs_urls)),
+    path("api/", include(router.urls)),
+    # For anything not caught by a more specific rule above, hand over to
+    # Wagtail's serving mechanism
+    re_path(r"", include(wagtail_urls)),
+]
+
+
+if settings.DEBUG:
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
+    urlpatterns += (
+        staticfiles_urlpatterns()
+    )  # tell gunicorn where static files are in dev mode
+    urlpatterns += static(
+        settings.MEDIA_URL + "images/",
+        document_root=os.path.join(settings.MEDIA_ROOT, "images"),
+    )
+    urlpatterns += [
+        path(
+            "favicon.ico",
+            RedirectView.as_view(url=settings.STATIC_URL + "myapp/images/favicon.ico"),
+        )
+    ]
